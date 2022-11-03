@@ -51,19 +51,24 @@ describe("Governor", function () {
       const transferAmount = ethers.utils.parseUnits("100", "18");
       await governorToken.transfer(add3.address,transferAmount);
       await governorToken.transfer(add4.address,transferAmount);
-      const blockNumBefore1 = await ethers.provider.getBlockNumber();
+      //get the block number before delegating
       await governorToken.connect(add3).delegate(otherAccount.address);
-      const blockNumBefore3 = await ethers.provider.getBlockNumber();
-      await governorToken.connect(add4).delegate(otherAccount.address);
+      // get the block number after the first  delegation
       const blockNumBefore2 = await ethers.provider.getBlockNumber();
+      await governorToken.connect(add4).delegate(otherAccount.address);
+       // get the block number after the second  delegation
+      const blockNumBefore3 = await ethers.provider.getBlockNumber();
+      // inreasing time so that block will be finalised 
       const currentTime = await time.latest()
       console.log("Your old time is\n", currentTime);
       await time.increaseTo(currentTime + 20)
       const newCurrentTime = await time.latest()
       console.log("Your new time is\n", newCurrentTime);
-      const blockNumBefore4 = await ethers.provider.getBlockNumber();
-      const votes = await governorToken.getPriorVotes(add3.address,blockNumBefore2);
-      console.log(blockNumBefore1, blockNumBefore2,blockNumBefore3,blockNumBefore4, votes);``
+      //get the block number for testing purpose
+      const votes2 = await governorToken.getPriorVotes(otherAccount.address,blockNumBefore2);
+      const votes3 = await governorToken.getPriorVotes(otherAccount.address,blockNumBefore3);
+      console.log("...............................loading different votes.............................");
+      console.log("then they are", votes2, votes3);
     });
   });
 
