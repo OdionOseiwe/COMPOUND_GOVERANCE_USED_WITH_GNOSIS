@@ -19,14 +19,5 @@ describe("Governor", function () {
     return { governorToken, owner, otherAccount, add3, add4, add5, add6, add7 };
   }
 
-  describe("DELEGATES", function () {
-    it("Checks Balance of Owner", async function () {
-      const { governorToken, owner} = await loadFixture(Governor);
-      const totalsupply = ethers.utils.parseUnits("10000000", "18");
-      expect (await governorToken.balanceOf(owner.address)).to.equal(totalsupply); 
-    });
-
-  });
-
   
 });
