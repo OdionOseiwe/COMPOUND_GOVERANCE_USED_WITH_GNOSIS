@@ -16,7 +16,7 @@ describe("Governor", function () {
     const GovernorToken = await ethers.getContractFactory("GovernorAlpha");
     const governorToken = await GovernorToken.deploy(owner.address);
 
-    return { governorToken, owner, otherAccount, add3, add4, add5, add6, add7 };
+    return { governorToken, owner, otherAccount, add3};
   }
 
   
