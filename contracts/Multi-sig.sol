@@ -33,6 +33,9 @@ contract MultiSigWallet {
     address[] public owners;
     uint public required;
     uint public transactionCount;
+    bool private canWithdraw;
+    // admin is the goveranceAlpha.sol address
+    address admin;
 
     struct Transaction {
         uint value;      
@@ -116,6 +119,15 @@ contract MultiSigWallet {
         required = _required;
     }
 
+    function toggle(bool status) external {
+        require(msg.sender == admin, "not admin");
+        canWithdraw = status;
+    }
+
+    function changeAdmin(address _admin) external {
+        admin = _admin;
+    }
+
     /// @dev Allows to add a new owner. Transaction has to be sent by wallet.
     /// @param owner Address of new owner.
     function addOwner(address owner)
@@ -166,6 +178,7 @@ contract MultiSigWallet {
         public
         returns (uint transactionId)
     {
+        require(canWithdraw, "cant withdraw cannot proposal approval");
         transactionId = addTransaction(_amount, _target);
         confirmTransaction(transactionId);
     }
