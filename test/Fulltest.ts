@@ -21,7 +21,7 @@ describe("GovernorSystem", function () {
     const [owner, otherAccount, add3, add4, add5, add6, add7] = await ethers.getSigners();
 
     const timeLock = await ethers.getContractFactory("Timelock");
-    const timelock = await timeLock.deploy(owner.address, "604800");
+    const timelock = await timeLock.deploy(add4.address, "604800");
     const GovernorToken = await ethers.getContractFactory("GovernorToken");
     const governorToken = await GovernorToken.deploy(owner.address);
     const GovernorAlpha = await ethers.getContractFactory("GovernorAlpha");
@@ -53,12 +53,14 @@ describe("GovernorSystem", function () {
     });
 
     it("propose something to the dao and cast a vote", async function() {
-      const {  multisig,timelock, governorAlpha,governorToken,otherAccount, owner ,add3, add4, } = await loadFixture(GovernorsSystem);
-      const transferAmount = ethers.utils.parseUnits("1000000", "18");
+      const {  multisig,timelock, governorAlpha,governorToken,otherAccount, owner ,add3, add4,add7,add6 } = await loadFixture(GovernorsSystem);
+      const transferAmount = ethers.utils.parseUnits("200000", "18");
       await governorToken.transfer(add3.address,transferAmount);
       await governorToken.transfer(add4.address,transferAmount);
+      await governorToken.transfer(add7.address, transferAmount);
       await governorToken.connect(add3).delegate(owner.address);
       await governorToken.connect(add4).delegate(add3.address);
+      // await governorToken.connect(add7).delegate(add6.address);
       const signature = keccak256(toUtf8Bytes("true"));
       await governorAlpha.propose([multisig.address],["0"],["toggle(bool status)"],[signature],"need to help women in nigeria");
       console.log( signature);
@@ -67,14 +69,21 @@ describe("GovernorSystem", function () {
       await time.increaseTo(currentTime + 1)
       const newCurrentTime = await time.latest()
       console.log("Your new time is\n", newCurrentTime);
-      // await governorAlpha.queue("1");
       await governorAlpha.connect(add4).castVote("1",true);   
-      await governorAlpha.connect(add3).castVote("1",true);   
+       await timelock.set1(governorAlpha.address);
+     // await governorAlpha.connect(add4).cancel("1");
+      expect(await governorAlpha.connect(add3).castVote("1",true)).to.revertedWith("GovernorAlpha::_castVote: voting is closed"); 
       const actions = await governorAlpha.getActions("1"); 
       const receipt1 = await governorAlpha.getReceipt("1",add4.address);
       const receipt2 = await governorAlpha.getReceipt("1",add3.address)
       console.log(actions,  "actions \n",receipt1, receipt2,);
-      
+      const currentTime2 = await time.latest()
+      console.log("Your old time is\n", currentTime);
+      await time.increaseTo(currentTime + 20000)
+      const newCurrentTime2 = await time.latest()
+      console.log("Your new time is\n", newCurrentTime);
+      await governorAlpha.queue("1");
+      await governorAlpha.execute("1");
     });
 
 
