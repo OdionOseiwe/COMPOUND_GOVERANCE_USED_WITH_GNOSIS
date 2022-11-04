@@ -32,7 +32,6 @@ contract Timelock {
         delay = delay_;
     }
 
-    fallback() external payable { }
 
     function setDelay(uint delay_) public {
         require(msg.sender == address(this), "Timelock::setDelay: Call must come from Timelock.");
@@ -109,4 +108,6 @@ contract Timelock {
         // solium-disable-next-line security/no-block-members
         return block.timestamp;
     }
+
+    receive() external payable{}
 }
