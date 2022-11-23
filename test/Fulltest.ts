@@ -79,7 +79,7 @@ describe("GovernorSystem", function () {
       console.log(actions,  "actions \n",receipt1, receipt2,);
       const currentTime2 = await time.latest()
       console.log("Your old time is\n", currentTime);
-      await time.increaseTo(currentTime + 20000)
+      await time.increaseTo(currentTime + 400000)
       const newCurrentTime2 = await time.latest()
       console.log("Your new time is\n", newCurrentTime);
       await governorAlpha.queue("1");
